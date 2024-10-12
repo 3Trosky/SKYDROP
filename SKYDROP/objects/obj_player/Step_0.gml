@@ -37,6 +37,15 @@ if(y > 1000){
 		y = 350
 }
 
+//Aby tě skočení na spike vrátilo na začátek
+if place_meeting(x,y,obj_spike){
+	room_restart()
+}
+
+//aby se při dokončeni levelu(dotknutí vlajky), dalo do dalšiho levelu
+if place_meeting(x,y,obj_flag){
+	room_goto_next()
+}
 
 
 // realny pohyb postavy
