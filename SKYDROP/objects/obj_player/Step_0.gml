@@ -21,31 +21,17 @@ y_speed += 0.5;
 
 // Detekce kolize se zdí a pohyb horizontálně (pro `obj_ground`)
 if (place_meeting(x + x_speed, y, obj_ground)) {
-    while (!place_meeting(x + sign(x_speed), y, obj_ground)) {
-        x += sign(x_speed);  // Posouvá postavu až těsně ke zdi
+    // Zastaví horizontální pohyb, pokud dojde k nárazu
+    if (x_speed > 0) {
+        while (!place_meeting(x + 1, y, obj_ground)) {
+            x += 1; // Posune hráče doprava
+        }
+    } else if (x_speed < 0) {
+        while (!place_meeting(x - 1, y, obj_ground)) {
+            x -= 1; // Posune hráče doleva
+        }
     }
-    x_speed = 0;
-}
-
-// Detekce kolize s platformou
-var _platform = instance_place(x, y + 1, obj_platform);
-if (_platform != noone) {
-    // Pokud je postava nad platformou
-    if (y + sprite_height / 2 < _platform.y) {
-        y = _platform.y - sprite_height / 2; // Posuneme postavu těsně nad platformu
-        y_speed = 0; // Zastavíme vertikální pohyb
-    }
-
-    // Pokud je postava pod platformou a pohybuje se nahoru, posuneme ji nad platformu
-    if (y < _platform.y && y_speed < 0) {
-        y = _platform.y + sprite_height / 2; // Posuneme ji těsně nad platformu
-        y_speed = 0; // Zastavíme vertikální pohyb
-    }
-
-    // Přidáme horizontální rychlost platformy, pokud je postava nad ní
-    if (y + sprite_height / 2 >= _platform.y) {
-        x += _platform.x_speed; // Postava se posune s platformou
-    }
+    x_speed = 0; // Zastaví horizontální pohyb
 }
 
 // Detekce kolize s obj_ground a pohyb vertikálně
@@ -62,24 +48,6 @@ if (y_speed > 0 && place_meeting(x, y + y_speed, obj_ground)) {
     y_speed = 0;  // Zastaví vertikální pohyb na `obj_ground`
 }
 
-// Detekce kolize s platformou (kontrola shora a zdola)
-if (place_meeting(x, y + y_speed, obj_platform)) {
-    var _platform_y = instance_place(x, y + y_speed, obj_platform).y;
-
-    // Pokud postava narazí do platformy zespodu
-    if (y_speed < 0 && y > _platform_y) {
-        y = _platform_y + sprite_height / 2; // Posuneme ji těsně nad platformu
-        y_speed = 0; // Zastavíme vertikální pohyb
-    } 
-
-    // Pokud postava padá na platformu
-    else if (y_speed > 0 && y < _platform_y) {
-        while (!place_meeting(x, y + sign(y_speed), obj_ground) && !place_meeting(x, y + sign(y_speed), obj_platform)) {
-            y += sign(y_speed);  // Posouvá postavu až těsně nad platformu
-        }
-        y_speed = 0;  // Zastaví vertikální pohyb na platformě
-    }
-}
 
 // Když spadne z mapy, aby se portl na začátek (zatím jen provizorně) 
 if (y > 1000) {
@@ -94,9 +62,55 @@ if (place_meeting(x, y, obj_spike)) {
 
 // Aby se při dokončení levelu (dotknutí vlajky) dalo do dalšího levelu
 if (place_meeting(x, y, obj_flag)) {
-    room_goto_next();
+    room_goto(rm_lvl2);
+
 }
 
 // Realný pohyb postavy
 x += x_speed;
 y += y_speed;
+
+
+// PLATFORMA 
+
+
+
+// Detekce kolize s obj_platform (bez možnosti proskakování)
+var _platform = instance_place(x, y + y_speed, obj_platform);
+
+if (_platform != noone) {
+    // Pokud postava narazí na platformu ze spodu
+    if (y_speed < 0) {
+        // Pokud narazí do platformy zespodu, zastaví vertikální pohyb
+        while (!place_meeting(x, y + sign(y_speed), _platform)) {
+            y += sign(y_speed);  // Posouvá postavu až těsně nad platformu
+        }
+        y_speed = 0;  // Zastaví vertikální pohyb
+    } 
+    // Pokud postava může přistát na platformě (je NAD platformou)
+    else if (y_speed > 0 && y < _platform.y) {
+        // Postava se posune na přesnou výšku vrchu platformy
+        y = _platform.y - sprite_height / 2;
+
+        y_speed = 0;  // Zastaví vertikální pohyb na platformě
+
+        // Posun spolu s platformou (pokud se platforma pohybuje)
+        x += _platform.x_speed;  // Přidá horizontální rychlost platformy k pozici hráče
+        y += _platform.y_speed;  // Přidá vertikální rychlost platformy k pozici hráče
+    }
+}
+
+// Kontrola horizontální kolize s obj_ground
+if (place_meeting(x + x_speed, y, obj_ground)) {
+    // Zastaví horizontální pohyb, pokud dojde k nárazu
+    if (x_speed > 0) {
+        while (place_meeting(x + 1, y, obj_ground)) {
+            x -= 1; // Posune hráče zpět, pokud je přilepený
+        }
+    } else if (x_speed < 0) {
+        while (place_meeting(x - 1, y, obj_ground)) {
+            x += 1; // Posune hráče zpět, pokud je přilepený
+        }
+    }
+    x_speed = 0; // Zastaví horizontální pohyb
+}
