@@ -10,10 +10,16 @@ if (keyboard_check(ord("D"))) {
 
 // Skok pomocí mezerníku nebo klávesy W
 if (keyboard_check_pressed(vk_space) || keyboard_check_pressed(ord("W"))) {
+	
+	audio_play_sound(snd_jump,1,false); // Zvuk skoku
+	
     if (place_meeting(x, y + 1, obj_ground) || (place_meeting(x, y + 1, obj_platform) && y < instance_place(x, y + 1, obj_platform).y)) { 
         // Kontrola, zda je postava na zemi nebo na platformě a je NAD platformou
         y_speed = -12; // Výška skoku
+		
     }
+	
+	
 }
 
 // Gravitace

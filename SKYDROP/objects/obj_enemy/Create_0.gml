@@ -11,3 +11,4 @@ x_speed = 0;
 
 //proměna aby nepadal
 dont_fall = true;
+

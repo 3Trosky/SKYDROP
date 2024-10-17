@@ -5,6 +5,8 @@ x_speed = dir * spd;
 y_speed = y_speed + grv;
 
 
+
+
 //horzintlaní posouvání enemy
 if(place_meeting(x+x_speed,y,obj_ground)){
 	while(!place_meeting(x+sign(x_speed),y,obj_ground))
@@ -42,9 +44,18 @@ if(place_meeting(x,y,obj_player))
 	if(obj_player.y<y){
 		with(obj_player) y_speed = y_speed -12;
 		instance_destroy();
+		
+		audio_play_sound(snd_ememy_die,1,false); // Zvuk nižení enemy
 	}
+	
+	
+       
 	else
 	{
-		game_restart();
+		
+		 //audio_play_sound(snd_player_die, 1, false);  // NEFUNGUJE je třeba přidat ALARM se spožděním přeherání zvuku smrti hráče 
+    
+        game_restart();
+		
 	}
 }
