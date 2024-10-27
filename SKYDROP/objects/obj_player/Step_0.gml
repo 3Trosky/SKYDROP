@@ -1,108 +1,87 @@
+// Iniciace pohybu
 x_speed = 0;
 
 // Pohyb do stran
 if (keyboard_check(ord("A"))) {
-    x_speed = -5;
+    x_speed = -2;
 }
 if (keyboard_check(ord("D"))) {
-    x_speed = 5;
+    x_speed = 2;
 }
 
 // Skok pomocí mezerníku nebo klávesy W
-if (keyboard_check_pressed(vk_space) || keyboard_check_pressed(ord("W"))) {
-	
-	audio_play_sound(snd_jump,1,false); // Zvuk skoku
-	
-    if (place_meeting(x, y + 1, obj_ground) || (place_meeting(x, y + 1, obj_platform) && y < instance_place(x, y + 1, obj_platform).y)) { 
-        // Kontrola, zda je postava na zemi nebo na platformě a je NAD platformou
-        y_speed = -12; // Výška skoku
-		
-    }
-	
-	
+var on_ground_or_platform = place_meeting(x, y + 1, obj_ground) || (place_meeting(x, y + 1, obj_platform) && y < instance_place(x, y + 1, obj_platform).y);
+if ((keyboard_check_pressed(vk_space) || keyboard_check_pressed(ord("W"))) && on_ground_or_platform) {
+    y_speed = -8; // Výška skoku
+    audio_play_sound(snd_jump, 1, false); // Zvuk skoku
 }
 
 // Gravitace
-y_speed += 0.5;
+y_speed += 0.4;
 
-// Detekce kolize se zdí a pohyb horizontálně (pro `obj_ground`)
+// Detekce kolize se zdí a pohyb horizontálně
 if (place_meeting(x + x_speed, y, obj_ground)) {
     while (!place_meeting(x + sign(x_speed), y, obj_ground)) {
-        x += sign(x_speed);  // Posouvá postavu až těsně ke zdi
+        x += sign(x_speed); // Posouvá postavu až těsně ke zdi
     }
     x_speed = 0;
 }
 
-// Detekce kolize s platformou
+// Platformový pohyb
 var _platform = instance_place(x, y + 1, obj_platform);
-if (_platform != noone) {
-    // Pokud je postava nad platformou
-    if (y + sprite_height / 2 < _platform.y) {
-        y = _platform.y - sprite_height / 2; // Posuneme postavu těsně nad platformu
-        y_speed = 0; // Zastavíme vertikální pohyb
-    }
-
-    // Pokud je postava pod platformou a pohybuje se nahoru, posuneme ji nad platformu
-    if (y < _platform.y && y_speed < 0) {
-        y = _platform.y + sprite_height / 2; // Posuneme ji těsně nad platformu
-        y_speed = 0; // Zastavíme vertikální pohyb
-    }
-
-    // Přidáme horizontální rychlost platformy, pokud je postava nad ní
-    if (y + sprite_height / 2 >= _platform.y) {
-        x += _platform.x_speed; // Postava se posune s platformou
+if (_platform != noone && y + sprite_height / 2 <= _platform.y) {
+    // Postava je na platformě - pohybuje se s ní
+    x += _platform.x_speed;
+    
+    // Reset vertikální rychlosti při přistání na platformu
+    if (y_speed > 0) {
+        y_speed = 0;
     }
 }
 
-// Detekce kolize s obj_ground a pohyb vertikálně
+// Vertikální kolize s obj_ground nebo platformou
 if (y_speed > 0 && place_meeting(x, y + y_speed, obj_ground)) {
     while (!place_meeting(x, y + sign(y_speed), obj_ground)) {
-        y += sign(y_speed);  // Posouvá postavu až těsně nad zem
+        y += sign(y_speed);
     }
-    y_speed = 0;  // Zastaví vertikální pohyb na `obj_ground`
+    y_speed = 0;
 } else if (y_speed < 0 && place_meeting(x, y + y_speed, obj_ground)) {
-    // Pokud postava narazí do `obj_ground` ze spodu
     while (!place_meeting(x, y + sign(y_speed), obj_ground)) {
-        y += sign(y_speed);  // Posouvá postavu až těsně nad zem
+        y += sign(y_speed);
     }
-    y_speed = 0;  // Zastaví vertikální pohyb na `obj_ground`
+    y_speed = 0;
 }
 
-// Detekce kolize s platformou (kontrola shora a zdola)
+// Vertikální kolize s platformou (kontrola shora i zdola)
 if (place_meeting(x, y + y_speed, obj_platform)) {
     var _platform_y = instance_place(x, y + y_speed, obj_platform).y;
-
-    // Pokud postava narazí do platformy zespodu
     if (y_speed < 0 && y > _platform_y) {
-        y = _platform_y + sprite_height / 2; // Posuneme ji těsně nad platformu
-        y_speed = 0; // Zastavíme vertikální pohyb
-    } 
-
-    // Pokud postava padá na platformu
-    else if (y_speed > 0 && y < _platform_y) {
+        y = _platform_y + sprite_height / 2;
+        y_speed = 0;
+    } else if (y_speed > 0 && y < _platform_y) {
         while (!place_meeting(x, y + sign(y_speed), obj_ground) && !place_meeting(x, y + sign(y_speed), obj_platform)) {
-            y += sign(y_speed);  // Posouvá postavu až těsně nad platformu
+            y += sign(y_speed);
         }
-        y_speed = 0;  // Zastaví vertikální pohyb na platformě
+        y_speed = 0;
     }
 }
 
-// Když spadne z mapy, aby se portl na začátek (zatím jen provizorně) 
+// Resetování pozice, pokud postava spadne z mapy
 if (y > 1000) {
     x = 478;
     y = 350;
 }
 
-// Aby tě skočení na spike vrátilo na začátek
+// Reset při kolizi s ostnem
 if (place_meeting(x, y, obj_spike)) {
     room_restart();
 }
 
-// Aby se při dokončení levelu (dotknutí vlajky) dalo do dalšího levelu
+// Přechod na další level při dotyku vlajky
 if (place_meeting(x, y, obj_flag)) {
     room_goto_next();
 }
 
-// Realný pohyb postavy
+// Reálný pohyb postavy
 x += x_speed;
 y += y_speed;
