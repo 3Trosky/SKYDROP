@@ -10,4 +10,9 @@ draw_text(x, y, button_text);
 draw_set_halign(fa_left);
 draw_set_valign(fa_top);
 
-audio_play_sound(snd_menu, 1, true); // Hraje hudbu na pozadí (loop = true)
+
+// Start hudby v menu
+if (!audio_is_playing(snd_menu)) {
+    audio_play_sound(snd_menu, 1, true);
+}
+

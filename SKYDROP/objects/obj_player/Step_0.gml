@@ -27,6 +27,15 @@ if (place_meeting(x + x_speed, y, obj_ground)) {
     x_speed = 0;
 }
 
+// Detekce kolize se zdí a pohyb horizontálně (s fillem země)
+if (place_meeting(x + x_speed, y, obj_groundfill)) {
+    while (!place_meeting(x + sign(x_speed), y, obj_groundfill)) {
+        x += sign(x_speed); // Posouvá postavu až těsně ke zdi
+    }
+    x_speed = 0;
+}
+
+
 // Platformový pohyb
 var _platform = instance_place(x, y + 1, obj_platform);
 if (_platform != noone && y + sprite_height / 2 <= _platform.y) {
