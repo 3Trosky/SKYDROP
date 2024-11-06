@@ -52,10 +52,15 @@ if(place_meeting(x,y,obj_player))
        
 	else
 	{
-		
-		 //audio_play_sound(snd_player_die, 1, false);  // NEFUNGUJE je třeba přidat ALARM se spožděním přeherání zvuku smrti hráče 
-    
-        game_restart();
+		// Respawn hráče na spawn
+        with (obj_player) 
+        {
+          x = 478;
+          y = 350;
+        }
+		 audio_play_sound(snd_player_die, 1, false);  // NEFUNGUJE je třeba přidat ALARM se spožděním přeherání zvuku smrti hráče 
+ 
+       // game_restart();
 		
 	}
 }

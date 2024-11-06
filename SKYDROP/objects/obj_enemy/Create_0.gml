@@ -4,7 +4,7 @@
 
 //proměné na movement
 dir = -1;
-spd = 5;
+spd = 2; //5
 grv = 0.5;
 y_speed = 0;
 x_speed = 0;

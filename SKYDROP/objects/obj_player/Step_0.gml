@@ -89,6 +89,7 @@ if (place_meeting(x, y, obj_spike)) {
 // Přechod na další level při dotyku vlajky
 if (place_meeting(x, y, obj_flag)) {
     room_goto_next();
+	audio_play_sound(snd_next_level, 1, false); // Zvuk přechodu do dalšího levlu
 }
 
 // Reálný pohyb postavy
