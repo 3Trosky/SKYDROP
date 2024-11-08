@@ -29,11 +29,7 @@ if(place_meeting(x,y+y_speed,obj_ground)){
 	}
 	y_speed = 0;
 	
-	//aby nepadal když tam nebude blok !!Nefunguje musime pořešit!!
-	/*if(dont_fall && !position_meeting(x+(sprite_width/2)*dir,y+(sprite_height/2)+7,obj_ground))
-	{
-		dir = dir * -1;
-	}*/
+
 }	
 y = y + y_speed;
 
@@ -58,7 +54,7 @@ if(place_meeting(x,y,obj_player))
           x = 225;
           y = 300;
         }
-		 audio_play_sound(snd_ememy_die, 1, false);  // NEFUNGUJE je třeba přidat ALARM se spožděním přeherání zvuku smrti hráče 
+		 audio_play_sound(snd_ememy_die, 1, false);  
  
        // game_restart();
 		

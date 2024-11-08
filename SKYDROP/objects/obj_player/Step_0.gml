@@ -89,10 +89,10 @@ if (place_meeting(x, y + y_speed, obj_platform)) {
 }
 
 // Resetování pozice, pokud postava spadne z mapy
-if (y > 550) {
+/*if (y > 550) {
     x = 225;
     y = 300;
-}
+}*/
 
 // Reset při kolizi s ostnem
 if (place_meeting(x, y, obj_spike)) {
