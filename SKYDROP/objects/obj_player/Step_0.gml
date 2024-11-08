@@ -10,7 +10,10 @@ if (keyboard_check(ord("D"))) {
 }
 
 // Skok pomocí mezerníku nebo klávesy W
-var on_ground_or_platform = place_meeting(x, y + 1, obj_ground) || (place_meeting(x, y + 1, obj_platform) && y < instance_place(x, y + 1, obj_platform).y);
+var on_ground_or_platform = place_meeting(x, y + 1, obj_ground) || 
+                            place_meeting(x, y + 1, obj_platform) || 
+                            place_meeting(x, y + 1, obj_ground_stone) ||
+                            place_meeting(x, y + 1, obj_ground_stonefill);
 if ((keyboard_check_pressed(vk_space) || keyboard_check_pressed(ord("W"))) && on_ground_or_platform) {
     y_speed = -8; // Výška skoku
     audio_play_sound(snd_jump, 1, false); // Zvuk skoku
@@ -19,22 +22,23 @@ if ((keyboard_check_pressed(vk_space) || keyboard_check_pressed(ord("W"))) && on
 // Gravitace
 y_speed += 0.4;
 
-// Detekce kolize se zdí a pohyb horizontálně
-if (place_meeting(x + x_speed, y, obj_ground)) {
-    while (!place_meeting(x + sign(x_speed), y, obj_ground)) {
+// Horizontální kolize
+if (place_meeting(x + x_speed, y, obj_ground) || 
+    place_meeting(x + x_speed, y, obj_groundfill) || 
+    place_meeting(x + x_speed, y, obj_inviswall) || 
+    place_meeting(x + x_speed, y, obj_ground_stone) || 
+    place_meeting(x + x_speed, y, obj_ground_stonefill)) {
+    
+    while (!place_meeting(x + sign(x_speed), y, obj_ground) &&
+           !place_meeting(x + sign(x_speed), y, obj_groundfill) &&
+           !place_meeting(x + sign(x_speed), y, obj_inviswall) &&
+           !place_meeting(x + sign(x_speed), y, obj_ground_stone) &&
+           !place_meeting(x + sign(x_speed), y, obj_ground_stonefill)) {
+        
         x += sign(x_speed); // Posouvá postavu až těsně ke zdi
     }
     x_speed = 0;
 }
-
-// Detekce kolize se zdí a pohyb horizontálně (s fillem země)
-if (place_meeting(x + x_speed, y, obj_groundfill)) {
-    while (!place_meeting(x + sign(x_speed), y, obj_groundfill)) {
-        x += sign(x_speed); // Posouvá postavu až těsně ke zdi
-    }
-    x_speed = 0;
-}
-
 
 // Platformový pohyb
 var _platform = instance_place(x, y + 1, obj_platform);
@@ -49,13 +53,21 @@ if (_platform != noone && y + sprite_height / 2 <= _platform.y) {
 }
 
 // Vertikální kolize s obj_ground nebo platformou
-if (y_speed > 0 && place_meeting(x, y + y_speed, obj_ground)) {
-    while (!place_meeting(x, y + sign(y_speed), obj_ground)) {
+if (y_speed > 0 && (place_meeting(x, y + y_speed, obj_ground) || 
+                    place_meeting(x, y + y_speed, obj_ground_stone) || 
+                    place_meeting(x, y + y_speed, obj_ground_stonefill))) {
+    while (!place_meeting(x, y + sign(y_speed), obj_ground) &&
+           !place_meeting(x, y + sign(y_speed), obj_ground_stone) &&
+           !place_meeting(x, y + sign(y_speed), obj_ground_stonefill)) {
         y += sign(y_speed);
     }
     y_speed = 0;
-} else if (y_speed < 0 && place_meeting(x, y + y_speed, obj_ground)) {
-    while (!place_meeting(x, y + sign(y_speed), obj_ground)) {
+} else if (y_speed < 0 && (place_meeting(x, y + y_speed, obj_ground) || 
+                           place_meeting(x, y + y_speed, obj_ground_stone) || 
+                           place_meeting(x, y + y_speed, obj_ground_stonefill))) {
+    while (!place_meeting(x, y + sign(y_speed), obj_ground) &&
+           !place_meeting(x, y + sign(y_speed), obj_ground_stone) &&
+           !place_meeting(x, y + sign(y_speed), obj_ground_stonefill)) {
         y += sign(y_speed);
     }
     y_speed = 0;
@@ -68,7 +80,8 @@ if (place_meeting(x, y + y_speed, obj_platform)) {
         y = _platform_y + sprite_height / 2;
         y_speed = 0;
     } else if (y_speed > 0 && y < _platform_y) {
-        while (!place_meeting(x, y + sign(y_speed), obj_ground) && !place_meeting(x, y + sign(y_speed), obj_platform)) {
+        while (!place_meeting(x, y + sign(y_speed), obj_ground) && 
+               !place_meeting(x, y + sign(y_speed), obj_platform)) {
             y += sign(y_speed);
         }
         y_speed = 0;
@@ -76,9 +89,9 @@ if (place_meeting(x, y + y_speed, obj_platform)) {
 }
 
 // Resetování pozice, pokud postava spadne z mapy
-if (y > 1000) {
-    x = 478;
-    y = 350;
+if (y > 550) {
+    x = 225;
+    y = 300;
 }
 
 // Reset při kolizi s ostnem
@@ -89,7 +102,7 @@ if (place_meeting(x, y, obj_spike)) {
 // Přechod na další level při dotyku vlajky
 if (place_meeting(x, y, obj_flag)) {
     room_goto_next();
-	audio_play_sound(snd_next_level, 1, false); // Zvuk přechodu do dalšího levlu
+    audio_play_sound(snd_next_level, 1, false); // Zvuk přechodu do dalšího levlu
 }
 
 // Reálný pohyb postavy

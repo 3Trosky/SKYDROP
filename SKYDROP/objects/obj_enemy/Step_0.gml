@@ -45,7 +45,7 @@ if(place_meeting(x,y,obj_player))
 		with(obj_player) y_speed = y_speed -12;
 		instance_destroy();
 		
-		audio_play_sound(snd_ememy_die,1,false); // Zvuk nižení enemy
+		audio_play_sound(snd_player_die,1,false); // Zvuk nižení enemy
 	}
 	
 	
@@ -55,10 +55,10 @@ if(place_meeting(x,y,obj_player))
 		// Respawn hráče na spawn
         with (obj_player) 
         {
-          x = 478;
-          y = 350;
+          x = 225;
+          y = 300;
         }
-		 audio_play_sound(snd_player_die, 1, false);  // NEFUNGUJE je třeba přidat ALARM se spožděním přeherání zvuku smrti hráče 
+		 audio_play_sound(snd_ememy_die, 1, false);  // NEFUNGUJE je třeba přidat ALARM se spožděním přeherání zvuku smrti hráče 
  
        // game_restart();
 		
