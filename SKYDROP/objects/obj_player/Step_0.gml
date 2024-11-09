@@ -1,12 +1,33 @@
-// Iniciace pohybu
+var on_ground_or_platform = place_meeting(x, y + 1, obj_ground) || 
+                            place_meeting(x, y + 1, obj_platform) || 
+                            place_meeting(x, y + 1, obj_ground_stone) ||
+                            place_meeting(x, y + 1, obj_ground_stonefill);
+
 x_speed = 0;
 
 // Pohyb do stran
 if (keyboard_check(ord("A"))) {
     x_speed = -2;
+    // Animace chůze vlevo
+    image_speed = 0.2;  // Nastaví rychlost animace
+    if (on_ground_or_platform) {
+        image_index = 5;  // Nastaví první frame pro levou nohu
+    }
 }
-if (keyboard_check(ord("D"))) {
+else if (keyboard_check(ord("D"))) {
     x_speed = 2;
+    // Animace chůze vpravo
+    image_speed = 0.2;  // Nastaví rychlost animace
+    if (on_ground_or_platform) {
+        image_index = 1;  // Nastaví první frame pro pravou nohu
+    }
+}
+else {
+    // Pokud se postava nepohybuje, nastaví statický frame
+    image_speed = 0;  // Zastaví animaci
+    if (image_index != 9) {  // Pokud není na frame skoku
+        image_index = 0;  // Nastaví statický frame (klidový stav)
+    }
 }
 
 // Skok pomocí mezerníku nebo klávesy W
@@ -17,6 +38,16 @@ var on_ground_or_platform = place_meeting(x, y + 1, obj_ground) ||
 if ((keyboard_check_pressed(vk_space) || keyboard_check_pressed(ord("W"))) && on_ground_or_platform) {
     y_speed = -8; // Výška skoku
     audio_play_sound(snd_jump, 1, false); // Zvuk skoku
+    image_index = 9;  // Nastaví frame pro skok (10. frame)
+    image_speed = 0; // Zastaví animaci během skoku
+}
+
+// Kontrola pro návrat do animace chůze nebo klidového stavu
+if (on_ground_or_platform && x_speed != 0) {
+    image_speed = 0.2; // Obnoví animaci chůze
+} else if (on_ground_or_platform && x_speed == 0) {
+    image_index = 0; // Obnoví idle frame
+    image_speed = 0;
 }
 
 // Gravitace
