@@ -5,55 +5,50 @@ var on_ground_or_platform = place_meeting(x, y + 1, obj_ground) ||
 
 x_speed = 0;
 
-// Pohyb do stran
+
 if (keyboard_check(ord("A"))) {
     x_speed = -2;
-    // Animace chůze vlevo
-    image_speed = 0.2;  // Nastaví rychlost animace
+    
+    image_speed = 0.2;  
     if (on_ground_or_platform) {
-        image_index = 5;  // Nastaví první frame pro levou nohu
+        image_index = 5;  
     }
 }
 else if (keyboard_check(ord("D"))) {
     x_speed = 2;
-    // Animace chůze vpravo
-    image_speed = 0.2;  // Nastaví rychlost animace
+    
+    image_speed = 0.2;  
     if (on_ground_or_platform) {
-        image_index = 1;  // Nastaví první frame pro pravou nohu
+        image_index = 1;  
     }
 }
 else {
-    // Pokud se postava nepohybuje, nastaví statický frame
-    image_speed = 0;  // Zastaví animaci
-    if (image_index != 9) {  // Pokud není na frame skoku
-        image_index = 0;  // Nastaví statický frame (klidový stav)
+    image_speed = 0;  
+    if (image_index != 9) {  
+        image_index = 0;  
     }
 }
 
-// Skok pomocí mezerníku nebo klávesy W
 var on_ground_or_platform = place_meeting(x, y + 1, obj_ground) || 
                             place_meeting(x, y + 1, obj_platform) || 
                             place_meeting(x, y + 1, obj_ground_stone) ||
                             place_meeting(x, y + 1, obj_ground_stonefill);
 if ((keyboard_check_pressed(vk_space) || keyboard_check_pressed(ord("W"))) && on_ground_or_platform) {
-    y_speed = -8; // Výška skoku
-    audio_play_sound(snd_jump, 1, false); // Zvuk skoku
-    image_index = 9;  // Nastaví frame pro skok (10. frame)
-    image_speed = 0; // Zastaví animaci během skoku
+    y_speed = -8; 
+    audio_play_sound(snd_jump, 1, false); 
+    image_index = 9;  
+    image_speed = 0; 
 }
 
-// Kontrola pro návrat do animace chůze nebo klidového stavu
 if (on_ground_or_platform && x_speed != 0) {
-    image_speed = 0.2; // Obnoví animaci chůze
+    image_speed = 0.2; 
 } else if (on_ground_or_platform && x_speed == 0) {
-    image_index = 0; // Obnoví idle frame
+    image_index = 0;
     image_speed = 0;
 }
 
-// Gravitace
 y_speed += 0.4;
 
-// Horizontální kolize
 if (place_meeting(x + x_speed, y, obj_ground) || 
     place_meeting(x + x_speed, y, obj_groundfill) || 
     place_meeting(x + x_speed, y, obj_inviswall) || 
@@ -66,24 +61,21 @@ if (place_meeting(x + x_speed, y, obj_ground) ||
            !place_meeting(x + sign(x_speed), y, obj_ground_stone) &&
            !place_meeting(x + sign(x_speed), y, obj_ground_stonefill)) {
         
-        x += sign(x_speed); // Posouvá postavu až těsně ke zdi
+        x += sign(x_speed);
     }
     x_speed = 0;
 }
 
-// Platformový pohyb
 var _platform = instance_place(x, y + 1, obj_platform);
 if (_platform != noone && y + sprite_height / 2 <= _platform.y) {
-    // Postava je na platformě - pohybuje se s ní
     x += _platform.x_speed;
     
-    // Reset vertikální rychlosti při přistání na platformu
+    
     if (y_speed > 0) {
         y_speed = 0;
     }
 }
 
-// Vertikální kolize s obj_ground nebo platformou
 if (y_speed > 0 && (place_meeting(x, y + y_speed, obj_ground) || 
                     place_meeting(x, y + y_speed, obj_ground_stone) || 
                     place_meeting(x, y + y_speed, obj_ground_stonefill))) {
@@ -104,7 +96,6 @@ if (y_speed > 0 && (place_meeting(x, y + y_speed, obj_ground) ||
     y_speed = 0;
 }
 
-// Vertikální kolize s platformou (kontrola shora i zdola)
 if (place_meeting(x, y + y_speed, obj_platform)) {
     var _platform_y = instance_place(x, y + y_speed, obj_platform).y;
     if (y_speed < 0 && y > _platform_y) {
@@ -119,23 +110,14 @@ if (place_meeting(x, y + y_speed, obj_platform)) {
     }
 }
 
-// Resetování pozice, pokud postava spadne z mapy
-/*if (y > 550) {
-    x = 225;
-    y = 300;
-}*/
-
-// Reset při kolizi s ostnem
 if (place_meeting(x, y, obj_spike)) {
     room_restart();
 }
 
-// Přechod na další level při dotyku vlajky
 if (place_meeting(x, y, obj_flag)) {
     room_goto_next();
-    audio_play_sound(snd_next_level, 1, false); // Zvuk přechodu do dalšího levlu
+    audio_play_sound(snd_next_level, 1, false);
 }
 
-// Reálný pohyb postavy
 x += x_speed;
 y += y_speed;
