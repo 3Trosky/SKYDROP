@@ -45,6 +45,7 @@
     {"id":{"name":"obj_cloud","path":"objects/obj_cloud/obj_cloud.yy",},},
     {"id":{"name":"obj_end_room","path":"objects/obj_end_room/obj_end_room.yy",},},
     {"id":{"name":"obj_enemy","path":"objects/obj_enemy/obj_enemy.yy",},},
+    {"id":{"name":"obj_esc","path":"objects/obj_esc/obj_esc.yy",},},
     {"id":{"name":"obj_flag","path":"objects/obj_flag/obj_flag.yy",},},
     {"id":{"name":"obj_global_timer","path":"objects/obj_global_timer/obj_global_timer.yy",},},
     {"id":{"name":"obj_ground_stone","path":"objects/obj_ground_stone/obj_ground_stone.yy",},},
