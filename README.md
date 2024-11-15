@@ -4,7 +4,11 @@
 
 ### Team Members:
 **Janda Jakub**: [jandaj.06@spst.eu](mailto:jandaj.06@spst.eu)
+
+
 **Kružík Štěpán**: [kruziks.06@spst.eu](mailto:kruziks.06@spst.eu)
+
+
 **Rašovský Jaroslav (Manager)**: [rasovskyj.06@spst.eu](mailto:rasovskyj.06@spst.eu)
 
 ---
